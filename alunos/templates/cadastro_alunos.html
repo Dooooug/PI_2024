@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% block 'titulo' %} Cadastro de Alunos {% endblock %}
+
+{% block 'conteudo' %}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+
+<script>
+$(document).ready(function(){
+  $('#cpf').mask('000.000.000-00');
+  $('#celular').mask('(00) 00000-0000');
+});
+</script>
+
+
+
+
+<div class="container">
+  {%if status == '0' %}
+
+  <div class="alert alert-primary" role="alert">
+      Cadastro Realizado Com Sucesso
+      
+    </div>
+
+  {%endif%}
+
+  {%if status == '1' %}
+
+  <div class="alert alert-danger" role="alert">
+      Não podem estar vazio.
+    </div>
+
+  {%endif%}
+
+  {%if status == '2' %}
+
+  <div class="alert alert-danger" role="alert">
+      CPF ou Celular Inválido 
+    </div>
+
+  {%endif%}
+
+  {%if status == '3' %}
+
+  <div class="alert alert-danger" role="alert">
+      Usuario já existe no sistema
+    </div>
+
+  {%endif%}
+
+  {%if status == '4' %}
+
+  <div class="alert alert-danger" role="alert">
+      Formulário em Branco
+    </div>
+
+  {%endif%}
+
+
+
+<div class="col-md">
+    
+    <h1>Cadastro de Alunos</h1>
+    <hr>
+
+<form method="POST" action="{% url 'cadastro_aluno' %}">{% csrf_token %} 
+    <label for="data_inicio">Data de Início:</label><br>
+    <input type="date" id="data_inicio" name="data_inicio" class="form-control">
+    <br>
+    <label for="nome"> Nome:</label>
+    <br>
+    <input type="text" id="nome" name="nome" class="form-control">
+    <br>
+    <label for="sobrenome">Sobrenome:</label>
+    <br>
+    <input type="text" id="sobrenome" name="sobrenome" class="form-control">
+    <br>
+    <label for="endereco">Endereço:</label>
+    <br>
+    <input type="text" id="endereco" name="endereco" class="form-control">
+    <br>
+    <label for="idade">Idade:</label>
+    <br>
+    <input type="number" id="idade" name="idade" class="form-control">
+    <br>
+    <label for="cpf">CPF:</label>
+    <input type="text" id="cpf" name="cpf" required
+         pattern="\d{3}\.\d{3}\.\d{3}-\d{2}"
+         title="Digite o CPF no formato: 000.000.000-00"
+         class="form-control">
+    <br>
+    <label for="celular">Celular:</label><br>
+    <input type="tel" id="celular" name="celular" required
+         pattern="(\d{2}\) \d{5}-\d{4}"
+         title="Digite o celular no formato: (00) 00000-0000"
+         class="form-control">
+    <br>
+    <label for="anamnesis">Anamnese:</label><br>
+    <textarea id="anamnesis" name="anamnesis"></textarea><br>
+    <br>
+
+    <label for="gympass">Gympass:</label><br>
+    <select id="gympass" name="gympass">
+      <option value="true">Sim</option>
+      <option value="false">Não</option>
+    <br>
+    
+    </select><br>
+    <br>
+    <label for="plano_escolhido">Plano Escolhido:</label><br>
+    <select id="plano_escolhido" name="plano_escolhido">
+      <option value="1x na Semana"> 1x na Semana </option>      
+      <option value="2x na Semana"> 2x na Semana </option>
+      <option value="3x na Semana"> 3x na Semana </option>
+    </select><br>
+    <br>
+    <label for="data_pagamento">Data de Pagamento:</label><br>
+    <input type="date" id="data_pagamento" name="data_pagamento" class="form-control">
+    <br>
+
+    <hr>
+
+    
+    <input class= "btn btn-info btn-lg" type="submit" value= "Cadastrar Aluno">
+    <a href="{% url 'home' %}" class="btn btn-warning btn-lg">Voltar</a>
+  </div>
+
+        
+  <div class= "col-md-3">
+
+  </div>
+</div>
+    
+      
+      
+{% endblock %}

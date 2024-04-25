@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+
+{% block 'titulo' %}Alunos Cadastrados{% endblock %}
+
+
+{% block 'conteudo' %}
+<h1>Alunos</h1>
+
+
+
+<form method="post">
+  {% csrf_token %}
+  <style>
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0.5rem; /* Espaçamento entre as células */
+    }
+    th, td {
+      border: 1px solid #ddd; /* Borda das células */
+      padding: 0.5rem; /* Espaçamento interno das células */
+      text-align: left;
+    }
+    thead {
+      background-color: #f8f8f8; /* Cor de fundo do cabeçalho da tabela */
+    }
+    tbody tr:nth-child(odd) {
+      background-color: #f2f2f2; /* Cor de fundo para linhas ímpares */
+    }
+  </style>
+  
+  <table>
+    <thead>
+      <tr>
+        <th>Data de Inicio</th>
+        <th>Nome</th>
+        <th>Sobrenome</th>
+        <th>Endereço</th>
+        <th>Idade</th>
+        <th>CPF</th>
+        <th>Celular</th>
+        <th>Anamnese</th>
+        <th>Gympass</th>
+        <th>Plano Escolhido</th>
+        <th>Data de Pagamento</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for Aluno in Aluno %}
+        <tr>
+          <td>{{ Aluno.data_inicio }}</td>
+          <td>{{ Aluno.nome }}</td>
+          <td>{{ Aluno.sobrenome }}</td>
+          <td>{{ Aluno.endereco }}</td>
+          <td>{{ Aluno.idade }}</td>
+          <td>{{ Aluno.cpf }}</td>
+          <td>{{ Aluno.celular }}</td>
+          <td>{{ Aluno.anamnesis }}</td>
+          <td>{{ Aluno.gympass }}</td>
+          <td>{{ Aluno.plano_escolhido }}</td>
+          <td>{{ Aluno.data_pagamento }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  
+{% endblock %}

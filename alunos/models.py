@@ -4,6 +4,8 @@ import datetime
 from usuarios.models import Usuario
 
 
+
+
 class Alunos(models.Model):
     data_inicio = models.DateField(default="Escolha a data de inicio")
     nome = models.CharField(max_length=30, default="Digite o nome")
@@ -33,3 +35,10 @@ class Alunos(models.Model):
     
     def __str__(self) -> str:
         return f"{self.gympass}"
+
+
+
+
+  
+
+

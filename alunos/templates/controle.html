@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+
+{% block 'titulo' %} ('status') {% endblock %}
+
+
+{% block 'conteudo' %}
+
+
+{%if status == '0' %}
+
+  <div class="alert alert-primary" role="alert">
+      Alteração Realizado Com Sucesso 
+  </div>      
+
+  <td>
+    <a href="{% url 'ver_alunos' %}" class= "btn btn-primary">Voltar a Lista de Alunos</a>
+  </td>
+
+  {%endif%}
+
+  {%if status == '1' %}
+
+  <div class="alert alert-danger" role="alert">
+      Data de inicio não pode estar em branco
+  </div>
+
+  <td>
+    <a href="{% url 'ver_alunos' %}" class= "btn btn-primary">Voltar a Lista de Alunos</a>
+  </td>
+
+  {%endif%}
+
+  {% endblock %}

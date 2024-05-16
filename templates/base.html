@@ -12,19 +12,38 @@
     
     <title>{% block 'titulo' %} {%endblock %}</title>
 
+    
+    <style>
+      .custom-navbar {
+        background-color: transparent !important; /* Make the navbar transparent */
+      }
+
+      .custom-navbar .navbar-brand {
+        font-weight: bold; /* Make the navbar brand text bold */
+      }
+
+      .custom-navbar .nav-link {
+        font-weight: bold; /* Make the navbar link text bold */
+      }
+    </style>
+
+  
+     
+
   </head>
   <body>
     
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light custom-navbar">
       <div class="container-fluid">
         <a class="navbar-brand" href={% url 'home' %}>Studio Pilates Life + </a>
        
       {%if usuario_logado%}
 
+      <li class="nav-link active">
+        <a class="nav-link" href={% url 'ver_alunos'%}>Ver Alunos</a>
+      </li>
 
-      <a href="{% url 'ver_alunos'%}" class="btn btn-primary">Ver Alunos</a>
-      <a href="{% url 'sair'%}" class="btn btn-danger">Sair</a>
-      
+  
              
                  
       {% endif %}
@@ -47,9 +66,17 @@
               <li class="nav-link active">
                 <a class="nav-link" href={% url 'cadastro_alunos' %}>Área do Professor</a>
               </li>
+
+      {%if usuario_logado%}
+
+      <a href="{% url 'sair'%}" class="btn btn-danger btn-sm"> Sair </a>
+
+      {% endif %}
             
-      </nav>
+    </nav>
   {% block 'conteudo' %} {%endblock %}
+
+  
 
   <!-- JavaScript (Opcional) -->
   <!-- jQuery primeiro, depois Popper.js, depois Bootstrap JS -->

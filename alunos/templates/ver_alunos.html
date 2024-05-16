@@ -5,9 +5,8 @@
 
 
 {% block 'conteudo' %}
+
 <h1>Alunos</h1>
-
-
 
 <form method="post">
   {% csrf_token %}
@@ -29,11 +28,13 @@
       background-color: #f2f2f2; /* Cor de fundo para linhas ímpares */
     }
   </style>
-  
+
   <table>
     <thead>
       <tr>
+        <th>ID</th>
         <th>Data de Inicio</th>
+        <th>Data de Pagamento</th>
         <th>Nome</th>
         <th>Sobrenome</th>
         <th>Endereço</th>
@@ -43,13 +44,15 @@
         <th>Anamnese</th>
         <th>Gympass</th>
         <th>Plano Escolhido</th>
-        <th>Data de Pagamento</th>
+        <th>Ações</th>
       </tr>
     </thead>
     <tbody>
       {% for Aluno in Aluno %}
         <tr>
+          <td>{{ Aluno.pk }}</td>
           <td>{{ Aluno.data_inicio }}</td>
+          <td>{{ Aluno.data_pagamento }}</td>
           <td>{{ Aluno.nome }}</td>
           <td>{{ Aluno.sobrenome }}</td>
           <td>{{ Aluno.endereco }}</td>
@@ -57,12 +60,21 @@
           <td>{{ Aluno.cpf }}</td>
           <td>{{ Aluno.celular }}</td>
           <td>{{ Aluno.anamnesis }}</td>
-          <td>{{ Aluno.gympass }}</td>
+          <td>{% if Aluno.gympass %}Sim{% else %}Não{% endif %}</td>
           <td>{{ Aluno.plano_escolhido }}</td>
-          <td>{{ Aluno.data_pagamento }}</td>
-        </tr>
+          <td>
+            <a href="{% url 'editar_aluno' pk=Aluno.pk %}" class= "btn btn-primary btn-sm">Editar</a>
+            <a href="{% url 'excluir_aluno' pk=Aluno.pk %}" class= "btn btn-danger btn-sm">Excluir</a>
+          </td>
+          </tr>
       {% endfor %}
+
+
+      
     </tbody>
   </table>
+  
+
+
   
 {% endblock %}

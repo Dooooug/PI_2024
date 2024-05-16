@@ -1,13 +1,26 @@
 {% extends 'base.html' %}
 
-
-{% block 'titulo' %}Home{% endblock %}
-
+{% block titulo %}Home{% endblock %}
 
 {% block 'conteudo' %}
 
+<style>
+    .hero-image {
+       object-fit: cover;
+       width: 100vw;
+       height: 100vh;
+     }
+   
+     /* Add responsive design for smaller screens */
+     @media (max-width: 768px) {
+      .hero-image {
+         height: 50vh;
+       }
+     }
+   </style>
+   
+   <a href="https://www.instagram.com/pilateslifemais/" ><img class="hero-image" src="https://i.imgur.com/1dvr817.jpg" title="source: imgur.com" /></a>
 
-  
+
 {% endblock %}
-    
   

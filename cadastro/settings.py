@@ -14,7 +14,6 @@ import os
 import secrets
 from pathlib import Path
 
-import dj_database_url
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -42,7 +41,7 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
-    "whitenoise.runserver_nostatic"
+    "whitenoise.runserver_nostatic",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -88,16 +87,7 @@ WSGI_APPLICATION = "cadastro.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-if IS_HEROKU_APP:
-    DATABASES = {
-        "default": dj_database_url.config(
-            conn_max_age=600,
-            conn_health_checks=True,
-            ssl_require=True,
-        ),
-    }
-else:
-    DATABASES = {
+DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": BASE_DIR / "db.sqlite3",
@@ -139,8 +129,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_ROOT = BASE_DIR / "staticfiles"
-STATIC_URL = "static/"
+STATIC_URL = '/assets/'
+STATIC_ROOT = os.path.join (BASE_DIR, "staticfiles")
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR,"static")
+]
 
 TORAGES = {
     # Enable WhiteNoise's GZip and Brotli compression of static assets:
@@ -154,6 +147,8 @@ TORAGES = {
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
+
+
 
 WHITENOISE_KEEP_ONLY_HASHED_FILES = True
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

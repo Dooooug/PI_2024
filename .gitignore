@@ -1,2 +1,4 @@
 cadastro/.gitignore
-venv/ .gitignore
+venv/
+*.txt
+settings/

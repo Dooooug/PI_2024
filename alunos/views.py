@@ -35,6 +35,13 @@ def calcular_proxima_data_pagamento(data_pagamento):
      proxima_data_pagamento = data_pagamento + timedelta(days=30)
      return proxima_data_pagamento
 
+def calcular_idade(data_nascimento):
+    hoje = datetime.today()
+    idade = hoje.year - data_nascimento.year
+    if (hoje.month, hoje.day) < (data_nascimento.month, data_nascimento.day):
+        idade -= 1
+    return idade
+
 def cadastro_aluno(request):         ### Para inserir no banco de dados
     data_inicio = timezone.now().date()
     if request.method == 'POST':
@@ -42,10 +49,9 @@ def cadastro_aluno(request):         ### Para inserir no banco de dados
     nome = request.POST.get("nome")
     sobrenome = request.POST.get("sobrenome")
     endereco = request.POST.get("endereco")
-    idade = request.POST.get("idade")
-    if not idade:
-         idade=0
-
+    data_nascimento_str = request.POST.get("data_nascimento")
+    data_nascimento = datetime.strptime(data_nascimento_str, '%Y-%m-%d').date()
+    idade = calcular_idade(data_nascimento)
     cpf = request.POST.get("cpf")
     regex_cpf = re.compile(r'^\d{3}\.\d{3}\.\d{3}-\d{2}$')
     if not regex_cpf.match(cpf):
@@ -84,6 +90,7 @@ def cadastro_aluno(request):         ### Para inserir no banco de dados
                 nome=nome,
                 sobrenome=sobrenome,
                 endereco=endereco,
+                data_nascimento=data_nascimento,
                 idade=idade,
                 cpf=cpf,
                 celular=celular,
@@ -96,12 +103,12 @@ def cadastro_aluno(request):         ### Para inserir no banco de dados
 
             proxima_data_pagamento= calcular_proxima_data_pagamento(data_pagamento)
             aluno.data_pagamento = proxima_data_pagamento
+            aluno.idade = idade
             aluno.save()
 
             return redirect("/valida-aluno-cadastro/?status=0")
     except:
             return redirect("/valida-aluno-cadastro/?status=4")
-
 
 @shared_task
 def verificar_pagamentos():    #### falta testar

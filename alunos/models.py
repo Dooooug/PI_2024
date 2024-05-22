@@ -7,10 +7,11 @@ from usuarios.models import Usuario
 
 
 class Alunos(models.Model):
-    data_inicio = models.DateField(default="Escolha a data de inicio")
+    data_inicio = models.DateField(default="2022-01-01")
     nome = models.CharField(max_length=30, default="Digite o nome")
     sobrenome = models.CharField(max_length=30, default="Digite o Sobrenome")
     endereco = models.CharField(max_length=100, default="Digite o endereço")
+    data_nascimento = models.DateField(default="1990-01-01")
     idade = models.IntegerField(default=18)
     cpf = models.CharField(max_length=11, default="Digite seu CPF")
     celular = models.CharField(max_length=15, default="")

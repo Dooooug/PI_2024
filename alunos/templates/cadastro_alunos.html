@@ -7,13 +7,6 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 
-<script>
-$(document).ready(function(){
-  $('#cpf').mask('000.000.000-00');
-  $('#celular').mask('(00) 00000-0000');
-});
-</script>
-
 <div class="container">
   {%if status == '0' %}
 
@@ -86,15 +79,14 @@ $(document).ready(function(){
     <br>
     <input type="text" id="endereco" name="endereco" class="form-control">
     <br>
-    <label for="idade">Idade:</label>
-    <br>
-    <input type="number" id="idade" name="idade" class="form-control">
+    <label for="data_nascimento">Data de Nascimento:</label><br>
+    <input type="date" id="data_nascimento" name="data_nascimento" class="form-control">
     <br>
     <label for="cpf">CPF:</label>
-      <input type="text" id="cpf" name="cpf" required class="form-control">
+    <input type="text" id="cpf" name="cpf" required class="form-control" pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" inputmode="numeric">
     <br>
     <label for="celular">Celular:</label><br>
-      <input type="tel" id="celular" name="celular" required class="form-control">
+    <input type="tel" id="celular" name="celular" required class="form-control" pattern="\([0-9]{2}\) [0-9]{5}-[0-9]{4}" inputmode="tel">
     <br>
     <label for="anamnesis">Anamnese:</label><br>
     <br>

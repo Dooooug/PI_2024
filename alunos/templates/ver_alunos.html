@@ -38,6 +38,7 @@
         <th>Nome</th>
         <th>Sobrenome</th>
         <th>Endereço</th>
+        <th>Data de Nascimento</th>
         <th>Idade</th>
         <th>CPF</th>
         <th>Celular</th>
@@ -56,8 +57,9 @@
           <td>{{ Aluno.nome }}</td>
           <td>{{ Aluno.sobrenome }}</td>
           <td>{{ Aluno.endereco }}</td>
+          <td>{{ Aluno.data_nascimento }}</td>   
           <td>{{ Aluno.idade }}</td>
-          <td>{{ Aluno.cpf }}</td>
+          <td>{{ Aluno.cpf }}</td>                 
           <td>{{ Aluno.celular }}</td>
           <td>{{ Aluno.anamnesis }}</td>
           <td>{% if Aluno.gympass %}Sim{% else %}Não{% endif %}</td>

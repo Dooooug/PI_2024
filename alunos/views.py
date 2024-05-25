@@ -8,7 +8,10 @@ from django.utils import timezone
 import re
 import requests
 from celery import shared_task
-from django.core.mail import send_mail
+import pytz
+import telebot
+import phonenumbers
+from django.contrib import messages
 
 
 def home(request): ### para renderizar o template home
@@ -35,34 +38,52 @@ def calcular_proxima_data_pagamento(data_pagamento):
      proxima_data_pagamento = data_pagamento + timedelta(days=30)
      return proxima_data_pagamento
 
-def calcular_idade(data_nascimento):
+def calcular_proxima_data_pagamento_srt(data_pagamento):
+    data_pagamento_dt = datetime.strptime(data_pagamento, "%Y-%m-%d")  # Convert string to datetime
+    proxima_data_pagamento = data_pagamento_dt + timedelta(days=30)
+    return proxima_data_pagamento.strftime("%Y-%m-%d")
+
+###def calcular_idade_str(data_nascimento):
+  ##  data_nascimento = datetime.strptime(data_nascimento, '%Y-%m-%d')  # assume que a data está no formato YYYY-MM-DD
+   ## hoje = datetime.today()
+  ##  idade = hoje.year - data_nascimento.year
+  ##  if (hoje.month, hoje.day) < (data_nascimento.month, data_nascimento.day):
+   ##     idade -= 1
+   ## return idade
+
+def calcular_idade_date(data_nascimento):
     hoje = datetime.today()
     idade = hoje.year - data_nascimento.year
     if (hoje.month, hoje.day) < (data_nascimento.month, data_nascimento.day):
         idade -= 1
     return idade
-
+   
 def cadastro_aluno(request):         ### Para inserir no banco de dados
     data_inicio = timezone.now().date()
     if request.method == 'POST':
-         data_inicio = request.POST.get("data_inicio")
+        data_inicio = request.POST.get("data_inicio")
     nome = request.POST.get("nome")
     sobrenome = request.POST.get("sobrenome")
     endereco = request.POST.get("endereco")
     data_nascimento_str = request.POST.get("data_nascimento")
     data_nascimento = datetime.strptime(data_nascimento_str, '%Y-%m-%d').date()
-    idade = calcular_idade(data_nascimento)
+    idade = calcular_idade_date(data_nascimento)
     cpf = request.POST.get("cpf")
     regex_cpf = re.compile(r'^\d{3}\.\d{3}\.\d{3}-\d{2}$')
     if not regex_cpf.match(cpf):
         return redirect("/valida-aluno-cadastro/?status=2")
     
     celular = request.POST.get("celular")
-    regex_celular = re.compile(r'^\(\d{2}\) \d{5}-\d{4}$')
-    if not regex_celular.match(celular):
+    if not celular.startswith("+55"):
+         celular = "+55" + celular
+    formatando_celular = phonenumbers.parse(celular, "BR")
+    if not phonenumbers.is_valid_number(formatando_celular):
         return redirect("/valida-aluno-cadastro/?status=5")
     
-    anamnesis = request.POST.get("anamnesis")
+    celular_formatado = phonenumbers.format_number(formatando_celular, phonenumbers.PhoneNumberFormat.NATIONAL)
+    celular = celular_formatado
+
+    anamnesis = request.POST.getlist("anamnesis[]")
     gympass = request.POST.get("gympass")
     if gympass =="true":
         gympass = True
@@ -79,10 +100,13 @@ def cadastro_aluno(request):         ### Para inserir no banco de dados
             data_pagamento = datetime.strptime(data_pagamento, '%Y-%m-%d').date()
 
     if len(nome.strip()) == 0 or len(celular.strip()) == 0:
-        return redirect("/valida-aluno-cadastro/?status=1")
+        return redirect("/valida-aluno-cadastro/?status=1") # Redirecione para uma página de erro 
 
     if Alunos.objects.filter(cpf=cpf).exists():
-        return redirect("/valida-aluno-cadastro/?status=3")
+        return redirect("/valida-aluno-cadastro/?status=3") # Redirecione para uma página de erro 
+    
+    if data_nascimento <= datetime(1900, 1, 1).date():
+        return redirect("/valida-aluno-cadastro/?status=6")  # Redirecione para uma página de erro 
     
     try:
             aluno = Alunos.objects.create(
@@ -119,23 +143,65 @@ def verificar_pagamentos():    #### falta testar
         aluno.data_pagamento = calcular_proxima_data_pagamento(aluno.data_pagamento)
         aluno.save()
 
-def calcular_data_lembrete(data_pagamento):
-    data_lembrete = data_pagamento - timedelta(hours=12)
+def calcular_data_lembrete(data_pagamento, enviar_um_dia_antes=True):
+    if enviar_um_dia_antes:
+        data_lembrete = data_pagamento - timedelta(days=1)
+    else:
+        data_lembrete = data_pagamento + timedelta(days=1)
     return data_lembrete
 
 
+TOKEN = "6943580812:AAGLmCbg6N2kzkdJ9uIn9xcqqBR165gU5lQ"
+bot = telebot.TeleBot(TOKEN)
 
-
-
+@shared_task
 def enviar_mensagem(aluno):
-    pass
+    data_pagamento = aluno.data_pagamento
+    data_lembrete = data_pagamento - timedelta(hours=12)
+
+    mensagem =  f"Olá, {aluno.nome}! Lembre-se de efetuar o pagamento até {data_pagamento.strftime('%d/%m/%Y')}."
+
+    try:
+        chat_id = aluno.celular  # Substitua pelo número correto do aluno
+        bot.send_message(chat_id, mensagem)
+        print(f"Lembrete enviado para {aluno.nome} ({aluno.celular})")
+    except Exception as e:
+        print(f"Erro ao enviar lembrete para {aluno.nome}: {str(e)}")
+
+def gerar_relatorio(alunos):
+    relatorio = ""
+    for aluno in alunos:
+        relatorio += f"{aluno.nome}: {aluno.data_pagamento.strftime('%d/%m/%Y')}\n"
+    return relatorio
+
+# Exemplo de uso
+if __name__ == "__main__":
+    # Suponha que 'alunos' seja uma lista de objetos Aluno com atributos 'nome', 'data_pagamento' e 'numero_whatsapp'
+    # Você deve adaptar isso conforme sua estrutura de dados
+    alunos = ["{aluno.nome}"]# Preencha com seus alunos
+
+    # Verifique os pagamentos e envie lembretes
+    for aluno in alunos:
+        enviar_mensagem(aluno)
+
+    # Gere o relatório
+    relatorio = gerar_relatorio(aluno)
+    print("Relatório de Pagamentos:")
+    print(relatorio)
+
+
+    
+def formatar_anamneses(anamneses):
+    return "".join(anamneses).replace("'", "").replace("[", "").replace("]", "")
 
 
     
 def ver_alunos(request):
     if request.session.get('usuario'):
         usuario = Usuario.objects.get(id=request.session['usuario'])
-        Aluno = Alunos.objects.all()  
+        Aluno = Alunos.objects.all()
+        for aluno in Aluno:
+            aluno.anamnesis = formatar_anamneses(aluno.anamnesis)
         return render(request, 'ver_alunos.html', {'usuario_logado': request.session.get('usuario'), 'Aluno': Aluno})
     else:
         return redirect('/auth/login/?status=2')
@@ -152,68 +218,43 @@ def excluir_aluno(request, pk):
     else:
         return redirect('/auth/login/?status=2')
     
-    
+
 def editar_aluno(request, pk):
     if request.session.get('usuario'):
         usuario = Usuario.objects.get(id=request.session['usuario'])
         aluno = get_object_or_404(Alunos, pk=pk)
 
         if request.method == "POST":
-            current_sobrenome = aluno.sobrenome
-            current_nome = aluno.nome
-            current_endereco = aluno.endereco
-            current_idade = aluno.idade
-            current_cpf = aluno.cpf
-
-            data_inicio = request.POST.get('data_inicio')
+            data_inicio = request.POST.get('data_inicio', aluno.data_inicio)
             if not data_inicio or data_inicio == '':
                 return redirect("/valida-edicao-cadastro/?status=1")
             aluno.data_inicio = data_inicio
-
-            nome = request.POST.get('nome')
-            if nome and nome != '':
-                current_nome = nome
-            aluno.nome = current_nome
-
-            sobrenome = request.POST.get('sobrenome')
-            if sobrenome and sobrenome != '':
-                current_sobrenome = sobrenome
-            aluno.sobrenome = current_sobrenome
-
-            endereco = request.POST.get('endereco')
-            if endereco and endereco != '':
-                current_endereco = endereco
-            aluno.endereco = current_endereco
-
-            idade = request.POST.get('idade')
-            if idade and idade != current_idade:
-                current_idade = idade
-            aluno.idade = current_idade
-
-            cpf = request.POST.get('cpf')
-            if cpf and cpf != '':
-                current_cpf = cpf
-            aluno.cpf = current_cpf
-
-            aluno.celular = request.POST.get('celular')
-
-            anamesis = request.POST.get('anamnesis')
-            if not anamesis or anamesis == '':
-                return redirect("/valida-edicao-cadastro/?status=1")
-
-            aluno.anamnesis = anamesis
-
+            aluno.nome = request.POST.get('nome', aluno.nome)
+            aluno.sobrenome = request.POST.get('sobrenome', aluno.sobrenome)
+            aluno.endereco = request.POST.get('endereco', aluno.endereco)
+            aluno.celular = request.POST.get('celular', aluno.celular)
             aluno.gympass = request.POST.get('gympass') == 'True'
-            aluno.plano_escolhido = request.POST.get('plano_escolhido')
+            aluno.plano_escolhido = request.POST.get('plano_escolhido', aluno.plano_escolhido)
+
+            anamnesis = request.POST.getlist("anamnesis[]", [])
+            if anamnesis:
+                aluno.anamnesis = formatar_anamneses(aluno.anamnesis)
+
+            proxima_data_pagamento = calcular_proxima_data_pagamento_srt(aluno.data_inicio)
+            aluno.data_pagamento = proxima_data_pagamento
 
             aluno.save()
-        
 
-           
-        return render(request, 'editar_alunos.html', {'Aluno': aluno})
+            mensagem_confirmacao = f"Os dados do aluno {aluno.nome}{aluno.sobrenome} foram atualizados com sucesso!"
+            return render(request, 'editar_alunos.html', {'Aluno': aluno, 'mensagem_confirmacao': mensagem_confirmacao})
+        else:
+            return render(request, 'editar_alunos.html', {'Aluno': aluno})
     else:
         return redirect('/auth/login/?status=2')
         
+   
+        
+       
 def valida_edicao_cadastro(request):
     status = request.GET.get("status")
-    return render(request, "controle.html", {"status": status})
+    return render(request, 'ver_alunos.html', {"status": status})

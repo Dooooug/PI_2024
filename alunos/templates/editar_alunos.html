@@ -4,9 +4,18 @@
 
 {% block 'conteudo' %}
 
-  <div class="col-md">
+    {% if mensagem_confirmacao %}
+        <div class="alert alert-success">
+            {{ mensagem_confirmacao }}
+        </div>
+        <a href="{% url 'ver_alunos' %}" class="btn btn-primary">Voltar a Lista de Alunos</a>
+    {% endif %}
+
+<div class="container">
+<div class="col-md">
 
   <h2>Editar Aluno</h2>
+
 <form method="post">
 
     {% csrf_token %}
@@ -19,28 +28,35 @@
     <label for="sobrenome">Sobrenome:</label>
     <input type="sobrenome" name="sobrenome" class="form-control" value="{{ Aluno.sobrenome }}">
     <br>
-    <br>
     <label for="endereco">Endereço:</label>
     <br>
     <input type="text" id="endereco" name="endereco" class="form-control" value="{{ Aluno.endereco }}">
     <br>
-    <label for="data_nascimento">Data de Início:</label><br>
-    <input type="date" id="data_nascimento" name="data_nascimento" class="form-control" value="{{ Aluno.data_nascimento}}">
-    <br>
-    <label for="idade">Idade:</label>
-    <input type="number" name="idade" class="form-control" value="{{ Aluno.idade }}">
-    <br>
-    <label for="cpf">CPF:</label>
-    <input type="text" id="cpf" name="cpf" required class="form-control" value="{{ Aluno.cpf }}">
-    <br>
     <label for="celular">Celular:</label>
     <br>
       <input type="tel" id="celular" name="celular" required class="form-control" value="{{ Aluno.celular }}">
-      <br>
     <br>
-    <label for="anamnesis">Anamnese:</label>
+    <label for="anamnesis">Anamnese:</label><br>
     <br>
-    <textarea id="anamnesis" name="anamnesis" class="form-control">{{ Aluno.anamnesis }}</textarea>
+<div>
+  <input type="checkbox" id="dor_lombar" name="anamnesis[]" value="Dor na lombar">
+  <label for="dor_lombar">Dor na lombar</label><br>
+  <input type="checkbox" id="dor_joelho" name="anamnesis[]" value="Dor no joelho">
+  <label for="dor_joelho">Dor no joelho</label><br>
+  <input type="checkbox" id="dor_ombro" name="anamnesis[]" value="Dor no ombro">
+  <label for="dor_ombro">Dor no ombro</label><br>
+  <input type="checkbox" id="dor_cervical" name="anamnesis[]" value="Dor na cervical">
+  <label for="dor_cervical">Dor na cervical</label><br>
+  <input type="checkbox" id="dores_quadril" name="anamnesis[]" value="Dores no quadril">
+  <label for="dores_quadril">Dores no quadril</label><br>
+  <input type="checkbox" id="dor_tornozelo" name="anamnesis[]" value="Dor no tornozelo">
+  <label for="dor_tornozelo">Dor no tornozelo</label><br>
+  <input type="checkbox" id="dor_punho" name="anamnesis[]" value="Dor no punho">
+  <label for="dor_punho">Dor no punho</label><br>
+  <br>
+  <input type="text" id="outro" name="anamnesis[]" placeholder="Outros">
+  <label for="outro"></label><br>
+</div>
     <br>
     <label for="gympass">Gympass:</label>
     <br>
@@ -49,7 +65,7 @@
       <option value=False {% if not Aluno.gympass %}selected{% endif %}>Não</option>
     </select>
     <br>
-    <hr>
+    <br>
     <label for="plano_escolhido">Plano Escolhido:</label>
     <br>
     <select id="plano_escolhido" name="plano_escolhido">
@@ -61,6 +77,7 @@
     <hr>
     <button class= "btn btn-primary btn-sm" type="submit">Salvar alterações </button>
     <a class= "btn btn-primary btn-sm" href={% url 'ver_alunos'%}>Ver Alunos</a>
+    <a class= "btn btn-primary btn-sm" href={% url 'cadastro_alunos'%}>Cadastrar Novo Aluno</a>
 
 {% endblock %}
 

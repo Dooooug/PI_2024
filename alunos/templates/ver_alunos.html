@@ -6,10 +6,30 @@
 
 {% block 'conteudo' %}
 
+
+  {% if status == '0' %}
+    <div class="alert alert-primary" role="alert">
+      Alteração Realizado Com Sucesso
+      <a href="{% url 'ver_alunos' %}" class="btn btn-primary">Voltar a Lista de Alunos</a>
+    </div>
+  {% elif status == '1' %}
+    <div class="alert alert-danger" role="alert">
+      Data de inicio não pode estar em branco
+      <a href="{% url 'ver_alunos' %}" class="btn btn-primary">Voltar a Lista de Alunos</a>
+    </div>
+  {% elif status == '2' %}
+    <div class="alert alert-danger" role="alert">
+      Descobrir o erro
+      <a href="{% url 'ver_alunos' %}" class="btn btn-primary">Voltar a Lista de Alunos</a>
+    </div>
+  {% endif %}
+
+  
 <h1>Alunos</h1>
 
 <form method="post">
   {% csrf_token %}
+  
   <style>
     table {
       width: 100%;
@@ -75,8 +95,8 @@
       
     </tbody>
   </table>
-  
 
-
+<a class= "btn btn-primary btn-sm" href={% url 'cadastro_alunos'%}>Cadastrar Novo Aluno</a>
+<a class= "btn btn-danger btn-sm" href="{% url 'sair'%}" >Sair</a>
   
 {% endblock %}

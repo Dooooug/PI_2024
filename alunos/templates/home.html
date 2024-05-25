@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block titulo %}Home{% endblock %}
+{% block 'titulo' %}Home{% endblock %}
 
 {% block 'conteudo' %}
 
@@ -14,13 +14,41 @@
      /* Add responsive design for smaller screens */
      @media (max-width: 768px) {
       .hero-image {
-         height: 50vh;
+         height: 30vh;
        }
      }
-   </style>
-   
-   <a href="https://www.instagram.com/pilateslifemais/" ><img class="hero-image" src="https://i.imgur.com/1dvr817.jpg" title="source: imgur.com" /></a>
 
+     .ctn_conteudo{
+        margin-top: 10px;
+     }
+
+     .icon{
+      width: 30px;
+      height: 30px;
+     }
+
+     #IG{
+      position: absolute;
+      top: 553px; 
+      left: 300px;
+     }
+
+     #WPP{
+      position: absolute;
+      top: 553px;
+      left: 1040px;
+     }
+</style>
+
+<div class="ctn_conteudo">
+  <img class="hero-image" src="https://i.imgur.com/xzmOi5j.png" title="source: imgur.com" />
+  <a href="https://www.instagram.com/pilateslifemais/" target="_blank">
+    <img id="IG"class="icon" src="https://i.imgur.com/X1Mub7n.png" alt="Ícone do IG">
+  </a>
+  <a href="https://wa.me/5519991977215" target="_blank">
+    <img id="WPP" class="icon" src="https://i.imgur.com/qElin7s.png" alt="Ícone do What'sApp">
+  </a>
+</div>
 
 {% endblock %}
   

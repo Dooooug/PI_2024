@@ -1,34 +1,31 @@
 {% extends 'base.html' %}
 
+{% block titulo %}{{ status }}{% endblock %}
 
-{% block 'titulo' %} ('status') {% endblock %}
+{% block conteudo %}
 
+<div class="container">
+  <h1>Validação de Edição de Cadastro</h1>
+  <p>O status de validação é: {{ status }}</p>
 
-{% block 'conteudo' %}
-
-
-{%if status == '0' %}
-
-  <div class="alert alert-primary" role="alert">
-      Alteração Realizado Com Sucesso 
-  </div>      
-
-  <td>
-    <a href="{% url 'ver_alunos' %}" class= "btn btn-primary">Voltar a Lista de Alunos</a>
-  </td>
-
-  {%endif%}
-
-  {%if status == '1' %}
-
-  <div class="alert alert-danger" role="alert">
+  {% if status == '0' %}
+    <div class="alert alert-primary" role="alert">
+      Alteração Realizado Com Sucesso
+    </div>
+  {% elif status == '1' %}
+    <div class="alert alert-danger" role="alert">
       Data de inicio não pode estar em branco
-  </div>
+    </div>
+  {% elif status == '2' %}
+    <div class="alert alert-danger" role="alert">
+      Descobrir o erro
+    </div>
+  {% else %}
+    <div class="alert alert-warning" role="alert">
+      Status inválido: {{ status }}
+    </div>
+  {% endif %}
 
-  <td>
-    <a href="{% url 'ver_alunos' %}" class= "btn btn-primary">Voltar a Lista de Alunos</a>
-  </td>
+  <a href="{% url 'ver_alunos' %}" class="btn btn-primary">Voltar a Lista de Alunos</a>
 
-  {%endif%}
-
-  {% endblock %}
+{% endblock %}

@@ -2,6 +2,8 @@ from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from .models import Usuario
 from hashlib import sha256
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.hashers import make_password
 
 
 def login(request):
